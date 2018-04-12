@@ -1,5 +1,7 @@
 <?php
 
+namespace Ideo\Transaction;
+
 use Doctrine\ORM\Mapping AS ORM;
 
 /**

@@ -1,8 +1,10 @@
 <?php
 
+namespace Ideo\Transaction;
+
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
-use Ideo\Transaction\DoctrineDBALTransactionManager;
 
 class DoctrineDBALTransactionManagerTest extends TestCase
 {
@@ -12,6 +14,24 @@ class DoctrineDBALTransactionManagerTest extends TestCase
      */
     private $conn;
 
+    private function createRow($id, $name)
+    {
+        $this->conn->insert('SAMPLE', [
+            'id' => $id,
+            'name' => $name
+        ]);
+    }
+
+    private function fetchAll()
+    {
+        $rows = $this->conn->fetchAll('SELECT * FROM SAMPLE');
+
+        return $rows;
+    }
+
+    /**
+     * @throws DBALException
+     */
     public function setUp()
     {
         parent::setUp();
@@ -54,21 +74,6 @@ class DoctrineDBALTransactionManagerTest extends TestCase
         $rows = $this->fetchAll();
 
         $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!']]);
-    }
-
-    private function createRow($id, $name)
-    {
-        $this->conn->insert('SAMPLE', [
-            'id' => $id,
-            'name' => $name
-        ]);
-    }
-
-    private function fetchAll()
-    {
-        $rows = $this->conn->fetchAll('SELECT * FROM SAMPLE');
-
-        return $rows;
     }
 
 }

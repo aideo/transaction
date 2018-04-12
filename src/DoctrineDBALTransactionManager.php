@@ -3,6 +3,7 @@
 namespace Ideo\Transaction;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ConnectionException;
 use Exception;
 use InvalidArgumentException;
 
@@ -44,7 +45,11 @@ class DoctrineDBALTransactionManager implements TransactionManager
      */
     public function commit()
     {
-        $this->conn->commit();
+        try {
+            $this->conn->commit();
+        } catch (ConnectionException $ex) {
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
+        }
     }
 
     /**
@@ -52,7 +57,11 @@ class DoctrineDBALTransactionManager implements TransactionManager
      */
     public function rollback()
     {
-        $this->conn->rollBack();
+        try {
+            $this->conn->rollBack();
+        } catch (ConnectionException $ex) {
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
+        }
     }
 
     /**
@@ -75,7 +84,7 @@ class DoctrineDBALTransactionManager implements TransactionManager
         } catch (Exception $ex) {
             $this->rollback();
 
-            throw $ex;
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
         }
     }
 

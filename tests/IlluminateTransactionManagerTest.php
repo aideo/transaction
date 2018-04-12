@@ -1,60 +1,18 @@
 <?php
 
-use Ideo\Transaction\IlluminateDatabaseTransactionManager;
+namespace Ideo\Transaction;
+
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
+use PDO;
 
-class IlluminateDatabaseTransactionManagerTest extends TestCase
+class IlluminateTransactionManagerTest extends TestCase
 {
 
     /**
      * @var ConnectionInterface
      */
     private $conn;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->conn = new Connection(new PDO('sqlite::memory:'));
-        $this->conn->statement('CREATE TABLE SAMPLE ( id INTEGER NOT NULL, name VARCHAR(50) NOT NULL )');
-
-        $this->createRow(1, 'Hello !!');
-    }
-
-    public function testCommit()
-    {
-        $tm = new IlluminateDatabaseTransactionManager($this->conn);
-        $tm->beginTransaction();
-
-        $this->createRow(2, 'World !!');
-        $rows = $this->fetchAll();
-
-        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
-
-        $tm->commit();
-
-        $rows = $this->fetchAll();
-
-        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
-    }
-
-    public function testRollback()
-    {
-        $tm = new IlluminateDatabaseTransactionManager($this->conn);
-        $tm->beginTransaction();
-
-        $this->createRow(2, 'World !!');
-        $rows = $this->fetchAll();
-
-        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
-
-        $tm->rollback();
-
-        $rows = $this->fetchAll();
-
-        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!']]);
-    }
 
     private function createRow($id, $name)
     {
@@ -78,6 +36,50 @@ class IlluminateDatabaseTransactionManagerTest extends TestCase
             ->toArray();
 
         return $rows;
+    }
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->conn = new Connection(new PDO('sqlite::memory:'));
+        $this->conn->statement('CREATE TABLE SAMPLE ( id INTEGER NOT NULL, name VARCHAR(50) NOT NULL )');
+
+        $this->createRow(1, 'Hello !!');
+    }
+
+    public function testCommit()
+    {
+        $tm = new IlluminateTransactionManager($this->conn);
+        $tm->beginTransaction();
+
+        $this->createRow(2, 'World !!');
+        $rows = $this->fetchAll();
+
+        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
+
+        $tm->commit();
+
+        $rows = $this->fetchAll();
+
+        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
+    }
+
+    public function testRollback()
+    {
+        $tm = new IlluminateTransactionManager($this->conn);
+        $tm->beginTransaction();
+
+        $this->createRow(2, 'World !!');
+        $rows = $this->fetchAll();
+
+        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!'], ['id' => 2, 'name' => 'World !!']]);
+
+        $tm->rollback();
+
+        $rows = $this->fetchAll();
+
+        $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!']]);
     }
 
 }

@@ -1,11 +1,14 @@
 <?php
 
+namespace Ideo\Transaction;
+
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Setup;
-use Ideo\Transaction\DoctrineORMTransactionManager;
 
 class DoctrineORMTransactionManagerTest extends TestCase
 {
@@ -15,6 +18,31 @@ class DoctrineORMTransactionManagerTest extends TestCase
      */
     private $em;
 
+    private function createRow($id, $name)
+    {
+        $entity = new DoctrineORMSampleEntity();
+        $entity->id = $id;
+        $entity->name = $name;
+
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        $this->em->clear();
+    }
+
+    private function fetchAll()
+    {
+        $results = $this->em->createQuery('SELECT e FROM Ideo\Transaction\DoctrineORMSampleEntity e');
+
+        $rows = $results->getArrayResult();
+
+        return $rows;
+    }
+
+    /**
+     * @throws DBALException
+     * @throws ORMException
+     */
     public function setUp()
     {
         parent::setUp();
@@ -61,27 +89,6 @@ class DoctrineORMTransactionManagerTest extends TestCase
         $rows = $this->fetchAll();
 
         $this->assertEquals($rows, [['id' => 1, 'name' => 'Hello !!']]);
-    }
-
-    private function createRow($id, $name)
-    {
-        $entity = new DoctrineORMSampleEntity();
-        $entity->id = $id;
-        $entity->name = $name;
-
-        $this->em->persist($entity);
-        $this->em->flush();
-
-        $this->em->clear();
-    }
-
-    private function fetchAll()
-    {
-        $results = $this->em->createQuery("SELECT e FROM DoctrineORMSampleEntity e");
-
-        $rows = $results->getArrayResult();
-
-        return $rows;
     }
 
 }

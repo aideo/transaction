@@ -73,10 +73,10 @@ class DoctrineORMTransactionManager implements TransactionManager
             $this->commit();
 
             return $return;
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
             $this->rollback();
 
-            throw $e;
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
         }
     }
 

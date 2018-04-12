@@ -2,9 +2,9 @@
 
 namespace Ideo\Transaction;
 
-use PDO;
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * PDO の TransactionManager 実装。
@@ -75,7 +75,7 @@ class PDOTransactionManager implements TransactionManager
         } catch (Exception $ex) {
             $this->rollback();
 
-            throw $ex;
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
         }
     }
 

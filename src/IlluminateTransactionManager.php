@@ -11,7 +11,7 @@ use InvalidArgumentException;
  *
  * @package Ideo\Transaction\Illuminate
  */
-class IlluminateDatabaseTransactionManager implements TransactionManager
+class IlluminateTransactionManager implements TransactionManager
 {
 
     /**
@@ -75,7 +75,7 @@ class IlluminateDatabaseTransactionManager implements TransactionManager
         } catch (Exception $ex) {
             $this->rollback();
 
-            throw $ex;
+            throw new TransactionException('An exception occurred during the transaction.', 0, $ex);
         }
     }
 
